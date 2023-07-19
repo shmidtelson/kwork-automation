@@ -1,0 +1,20 @@
+{
+  "name": "kwork-online",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "1.36.0",
+    "node-cron": "^3.0.2"
+  },
+  "scripts": {
+    "start": "ts-node kwork.ts"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "playwright": "1.36.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
