@@ -43,7 +43,7 @@ const sendTelegramMessage = async (message: string) => {
     await page.waitForTimeout(1500)
 
     for (const item of await page.locator('ul.chat__list .chat__list-item',
-        {has: await page.locator('.chat__list-message_warning=')}
+        {has: await page.locator('.chat__list-message_warning')}
     ).all()){
         const message = await item.locator('.chat__list-message').innerText();
         await sendTelegramMessage(message)
