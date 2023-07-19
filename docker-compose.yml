@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  kwork-automation:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - .:/app
