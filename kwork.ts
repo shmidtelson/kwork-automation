@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as fs from "fs";
-import playwright, { BrowserContext, Page, Cookie } from 'playwright';
+import { BrowserContext, Page, Cookie } from 'playwright';
+import { chromium } from 'playwright';
 const cron = require('node-cron');
 
 require('dotenv').config();
@@ -80,7 +81,8 @@ const initCookies = async (page: Page, context: BrowserContext, force: boolean =
 }
 
 const run = async () => {
-    const browser = await playwright['chromium'].launch();
+    console.log('Start task');
+    const browser = await chromium.launch();
     const context = await browser.newContext();
     const page: Page = await context.newPage();
 
