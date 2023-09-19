@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as fs from "fs";
 import { BrowserContext, Page, Cookie } from 'playwright';
-import { chromium } from 'playwright';
+import playwright, { chromium } from 'playwright';
 const cron = require('node-cron');
 
 require('dotenv').config();
@@ -89,33 +89,40 @@ const run = async () => {
     await initCookies(page, context);
 
     console.info('Went to inbox');
-    let currentAttempt = 1;
-    while (currentAttempt <= ATTEMPTS_GETTING_COOKIES) {
-        await page.goto(`${targetUrl}inbox`);
-        if (page.url().endsWith('/login')) {
-            await initCookies(page, context, true);
-            currentAttempt++;
-            continue;
+
+    try {
+        let currentAttempt = 1;
+        while (currentAttempt <= ATTEMPTS_GETTING_COOKIES) {
+            await page.goto(`${targetUrl}inbox`);
+
+            if (page.url().endsWith('/login')) {
+                await initCookies(page, context, true);
+                currentAttempt++;
+                continue;
+            }
+            await page.waitForTimeout(60000)
+            break;
         }
-        await page.waitForTimeout(1500)
-        break;
-    }
 
 
-    for (const item of await page.locator(CHATS_TABS_SELECTOR,
-        {has: await page.locator(CHATS_WITH_WARNING_SELECTOR)}
-    ).all()){
+        for (const item of await page.locator(CHATS_TABS_SELECTOR,
+            {has: await page.locator(CHATS_WITH_WARNING_SELECTOR)}
+        ).all()){
 
-        await item.click();
-        await page.waitForTimeout(1500)
+            await item.click();
+            await page.waitForTimeout(1500)
 
-        // Send message
-        const message = await page.locator(CHAT_MESSAGE_SELECTOR).last().innerHTML();
-        await sendTelegramMessage(message)
+            // Send message
+            const message = await page.locator(CHAT_MESSAGE_SELECTOR).last().innerHTML();
+            await sendTelegramMessage(message)
 
-        // Type text
-        await page.locator(CHAT_INPUT_MESSAGE_SELECTOR).type(helloMessage);
-        await page.locator(CHAT_SEND_MESSAGE_BUTTON_SELECTOR).click();
+            // Type text
+            await page.locator(CHAT_INPUT_MESSAGE_SELECTOR).type(helloMessage);
+            await page.locator(CHAT_SEND_MESSAGE_BUTTON_SELECTOR).click();
+        }
+    } catch (error) {
+        if (error instanceof playwright.errors.TimeoutError)
+            console.log('Timeout!');
     }
 
     await browser.close();
