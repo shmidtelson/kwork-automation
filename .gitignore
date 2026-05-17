@@ -6,3 +6,4 @@ node_modules/
 yarn-error.log
 .idea
 cookies.json
+processed-chats.json
